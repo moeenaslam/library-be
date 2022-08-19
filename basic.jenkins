@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+    environment {
+        api_name = "library-mgmt"
+        api_version = "0.0.1"
+
+    }
+    stages {
+        stage('Compilation and Analysis') {
+            steps {
+                sh 'chmod +x ./gradlew'
+                sh './gradlew clean'
+                sh './gradlew build -x test'
+            }
+        }
+
+        stage('Testing') {
+            steps {
+              sh './gradlew test'
+            }
+        }
+
+        stage('Deployment') {
+            steps {
+                script {
+                    try {
+                        sh "pid=\$(lsof -i:8085 -t); kill -TERM \$pid "
+                            + "|| kill -KILL \$pid"
+                    } catch (err){}
+                    withEnv(['JENKINS_NODE_COOKIE=dontkill']) {
+                        sh "nohup java -jar -Xmx100m -Dspring.profiles.active=prod ./build/libs/${api_name}-${api_version}.jar &"
+                    }
+                }
+            }
+        }
+    }
+}
