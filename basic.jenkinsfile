@@ -14,12 +14,6 @@ pipeline {
             }
         }
 
-        stage('Testing') {
-            steps {
-              sh './gradlew test'
-            }
-        }
-
         stage('Deployment') {
             steps {
                 script {
