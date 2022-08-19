@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        api_name = "library-mgmt"
+        api_name = "libary-mgmt"
         api_version = "0.0.1"
 
     }
